@@ -10,7 +10,7 @@ module Representable
 
     def collection(name, options={}, &block)
       options[:collection] = true # FIXME: don't override original.
-      options[:default] = []
+      options[:default] ||= []
       property(name, options, &block)
     end
 
@@ -35,6 +35,7 @@ module Representable
 
     def property(name, options={}, &block)
       base     = nil
+      options[:class] ||= OpenStruct
 
       if options[:inherit] # TODO: move this to Definition.
         base = representable_attrs.get(name).representer_module
