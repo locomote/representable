@@ -10,6 +10,7 @@ module Representable
 
     def collection(name, options={}, &block)
       options[:collection] = true # FIXME: don't override original.
+      options[:default] = []
       property(name, options, &block)
     end
 
