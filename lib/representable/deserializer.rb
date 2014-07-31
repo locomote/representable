@@ -7,6 +7,8 @@ module Representable
     def deserialize(fragment)
       # puts "deserialize #{@binding.name}" # TODO: introduce Representable::Debug.
 
+      fragment = [fragment] unless fragment.is_a?(Array)
+
       # next step: get rid of collect.
       fragment.enum_for(:each_with_index).collect do |item_fragment, i|
         @deserializer = ObjectDeserializer.new(@binding)

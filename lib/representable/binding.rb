@@ -126,7 +126,7 @@ module Representable
       # TODO: it would be better if user_options was nil per default and then we just don't pass it into lambdas.
       options = self[:pass_options] ? Options.new(self, user_options, represented, decorator) : user_options
 
-      proc.evaluate(exec_context, *(args<<options)) # from Uber::Options::Value.
+      proc.evaluate(exec_context, *(args << options)) # from Uber::Options::Value.
     end
 
 
