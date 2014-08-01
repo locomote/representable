@@ -12,6 +12,10 @@ module Representable
       options[:collection] = true # FIXME: don't override original.
       options[:default] ||= []
       options[:class] ||= OpenStruct
+
+      class_name = "#{name.to_s.singularize}_representer".classify
+      options[:extend] ||= class_name.constantize if class_exists?(class_name)
+
       property(name, options, &block)
     end
 
@@ -59,6 +63,13 @@ module Representable
     end
 
   private
+    def class_exists?(class_name)
+      klass = Module.const_get(class_name)
+      return true
+    rescue NameError
+      return false
+    end
+
     def inline_representer_for(base, features, name, options, &block)
       representer = options[:use_decorator] ? Decorator : self
 
