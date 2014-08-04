@@ -18,7 +18,7 @@ module Representable
       options[:class] ||= OpenStruct
 
       class_name = "#{name.to_s.singularize}_representer".classify
-      options[:extend] ||= class_name.constantize if class_exists?(class_name)
+      options[:extend] ||= class_name.constantize if class_exists?(class_name) && !block_given?
 
       property(name, options, &block)
     end
