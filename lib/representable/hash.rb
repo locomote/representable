@@ -27,12 +27,7 @@ module Representable
     # I decided it's more predictable to require the user to provide stringified keys.
     def from_hash(data, options={}, binding_builder=PropertyBinding)
       data = filter_wrap(data, options)
-
-      hooks = {}
-
-      update_properties_from(data, options, binding_builder, hooks).tap do |*|
-        hooks[:after].each(&:call) if hooks.key? :after
-      end
+      update_properties_from(data, options, binding_builder)
     end
 
     def to_hash(options={}, binding_builder=PropertyBinding)

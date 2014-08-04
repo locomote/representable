@@ -21,12 +21,19 @@ module Representable
     end
   end
 
+  class << self
+    attr_writer :hooks
+    def hooks
+      @hooks ||= {}
+    end
+  end
+
 private
   # Reads values from +doc+ and sets properties accordingly.
-  def update_properties_from(doc, options, format, hooks)
+  def update_properties_from(doc, options, format)
     if representable_hooks.key? :after
-      hooks[:after] ||= []
-      hooks[:after] << -> () { self.instance_exec(&representable_hooks[:after]) }
+      Representable.hooks[:after] ||= []
+      Representable.hooks[:after] << -> () { self.instance_exec(&representable_hooks[:after]) }
     end
     representable_mapper(format, options).deserialize(doc, options)
   end

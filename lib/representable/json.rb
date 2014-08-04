@@ -26,7 +26,10 @@ module Representable
     # Parses the body as JSON and delegates to #from_hash.
     def from_json(data, *args)
       data = MultiJson.load(data)
-      from_hash(data, *args)
+      from_hash(data, *args).tap do |*|
+        Representable.hooks[:after].each(&:call) if Representable.hooks.key? :after
+        Representable.hooks = []
+      end
     end
 
     # Returns a JSON string representing this object.
