@@ -28,7 +28,11 @@ module Representable
     def from_hash(data, options={}, binding_builder=PropertyBinding)
       data = filter_wrap(data, options)
 
-      update_properties_from(data, options, binding_builder)
+      hooks = {}
+
+      update_properties_from(data, options, binding_builder, hooks).tap do |*|
+        hooks[:after].each(&:call) if hooks.key? :after
+      end
     end
 
     def to_hash(options={}, binding_builder=PropertyBinding)

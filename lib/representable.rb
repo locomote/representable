@@ -9,7 +9,7 @@ require 'uber/callable'
 require 'representable/pipeline'
 
 module Representable
-  attr_writer :representable_attrs
+  attr_writer :representable_attrs, :representable_hooks, :parent
 
   def self.included(base)
     base.class_eval do
@@ -23,8 +23,11 @@ module Representable
 
 private
   # Reads values from +doc+ and sets properties accordingly.
-  def update_properties_from(doc, options, format)
-    # deserialize_for(bindings, mapper ? , options)
+  def update_properties_from(doc, options, format, hooks)
+    if representable_hooks.key? :after
+      hooks[:after] ||= []
+      hooks[:after] << -> () { self.instance_exec(&representable_hooks[:after]) }
+    end
     representable_mapper(format, options).deserialize(doc, options)
   end
 
@@ -46,6 +49,10 @@ private
     options.reject { |k,v| [:include, :exclude].include?(k) }
   end
 
+  def representable_hooks
+    @representable_hooks ||= self.class.representable_hooks
+  end
+
   def representable_attrs
     @representable_attrs ||= self.class.representable_attrs # DISCUSS: copy, or better not?
   end
@@ -55,9 +62,12 @@ private
     Mapper.new(bindings, represented, options) # TODO: remove self, or do we need it? and also represented!
   end
 
-
   def representation_wrap(*args)
     representable_attrs.wrap_for(self.class.name, represented, *args)
+  end
+
+  def parent
+    @parent
   end
 
   def represented
@@ -89,6 +99,7 @@ private
     def extended(object)
       super
       object.representable_attrs=(representable_attrs) # yes, we want a hard overwrite here and no inheritance.
+      object.representable_hooks=(representable_hooks)
     end
   end
 

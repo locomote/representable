@@ -4,6 +4,10 @@ module Representable
       @representable_attrs ||= build_config
     end
 
+    def representable_hooks
+      @representable_hooks ||= {}
+    end
+
     def representation_wrap=(name)
       representable_attrs.wrap = name
     end
@@ -51,6 +55,10 @@ module Representable
       end
 
       representable_attrs.add(name, options) # handles :inherit.
+    end
+
+    def after &block
+      representable_hooks[:after] = block
     end
 
     def build_inline(base, features, name, options, &block) # DISCUSS: separate module?

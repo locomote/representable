@@ -9,6 +9,8 @@ module Representable
 
       fragment = [fragment] unless fragment.is_a?(Array)
 
+      @binding.user_options[:parent] = @binding.represented
+
       # next step: get rid of collect.
       fragment.enum_for(:each_with_index).collect do |item_fragment, i|
         @deserializer = ObjectDeserializer.new(@binding)
@@ -33,6 +35,7 @@ module Representable
 
       # DISCUSS: what parts should be in this class, what in Binding?
       representable = prepare(object) # customize with :prepare and :extend.
+      representable.parent = @binding.user_options[:parent]
 
       deserialize(representable, fragment, @binding.user_options) # deactivate-able via :representable => false.
     end
