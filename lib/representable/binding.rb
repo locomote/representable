@@ -89,6 +89,7 @@ module Representable
 
     def set(value)
       evaluate_option(:setter, value) do
+        value = @definition[:type].new(value) if @definition[:type]
         exec_context.send(setter, value)
       end
     end
@@ -128,7 +129,6 @@ module Representable
 
       proc.evaluate(exec_context, *(args << options)) # from Uber::Options::Value.
     end
-
 
     # Options instance gets passed to lambdas when pass_options: true.
     # This is considered the new standard way and should be used everywhere for forward-compat.
