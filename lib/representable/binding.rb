@@ -89,7 +89,15 @@ module Representable
 
     def set(value)
       evaluate_option(:setter, value) do
-        value = @definition[:type].new(value) if @definition[:type]
+        if type = @definition[:type]
+          cls = type.is_a?(Symbol) ? Kernel.const_get(type.to_s.classify) : type
+          value = if cls.respond_to? :new
+            cls.new(value)
+          else
+            cls(value)
+          end
+        end
+
         exec_context.send(setter, value)
       end
     end
