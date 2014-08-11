@@ -50,6 +50,11 @@ module Representable
         representable_hooks[:eval] << -> { send("#{name}=", instance_exec(&eval)) }
       end
 
+      if set = options[:set]
+        representable_hooks[:set] ||= []
+        representable_hooks[:set] << set
+      end
+
       if options[:inherit] # TODO: move this to Definition.
         base = representable_attrs.get(name).representer_module
       end # FIXME: can we handle this in super/Definition.new ?

@@ -97,7 +97,11 @@ module Representable
           end
         end
 
-        exec_context.send(setter, value)
+        if set = @definition[:set]
+          exec_context.instance_exec(value, &set)
+        else
+          exec_context.send(setter, value)
+        end
       end
     end
 
