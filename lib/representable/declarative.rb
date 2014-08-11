@@ -45,6 +45,11 @@ module Representable
     def property(name, options={}, &block)
       base     = nil
 
+      if eval = options[:eval]
+        representable_hooks[:eval] ||= []
+        representable_hooks[:eval] << -> { send("#{name}=", instance_exec(&eval)) }
+      end
+
       if options[:inherit] # TODO: move this to Definition.
         base = representable_attrs.get(name).representer_module
       end # FIXME: can we handle this in super/Definition.new ?

@@ -80,7 +80,6 @@ module Representable
       evaluate_option(:parse_filter, value) { value }
     end
 
-
     def get
       evaluate_option(:getter) do
         exec_context.send(getter)
