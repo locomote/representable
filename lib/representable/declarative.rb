@@ -15,7 +15,7 @@ module Representable
     def collection(name, options={}, &block)
       options[:collection] = true # FIXME: don't override original.
       options[:default] ||= []
-      options[:class] ||= Representable.config.collection_class if Representable.config.collection_class
+      options[:class] ||= Representable.config.try(:collection_class)
 
       class_name = "#{name.to_s.singularize}_representer".classify
       options[:extend] ||= class_name.constantize if class_exists?(class_name) && !block_given?
