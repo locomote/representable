@@ -8,8 +8,22 @@ require 'representable/represent'
 require 'uber/callable'
 require 'representable/pipeline'
 
+require 'configatron/core'
+
 module Representable
   attr_writer :representable_attrs, :representable_hooks, :parent
+
+  class << self
+    def configure
+      @store ||= Configatron::RootStore.new
+      yield @store if block_given?
+      @store
+    end
+
+    def config
+      @store
+    end
+  end
 
   def self.included(base)
     base.class_eval do
