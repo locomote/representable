@@ -47,7 +47,15 @@ module Representable
 
       if eval = options[:eval]
         representable_hooks[:eval] ||= []
-        representable_hooks[:eval] << -> { send("#{name}=", instance_exec(&eval)) }
+
+        representable_hooks[:eval] << -> {
+          case eval.parameters.size
+            when 0
+              send("#{name}=", instance_exec(&eval))
+            when 1
+              send("#{name}=", instance_exec(send("#{name}"),&eval))
+          end
+        }
       end
 
       if set = options[:set]
