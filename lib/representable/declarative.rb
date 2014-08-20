@@ -53,14 +53,9 @@ module Representable
             when 0
               send("#{name}=", instance_exec(&eval))
             when 1
-              send("#{name}=", instance_exec(send("#{name}"),&eval))
+              send("#{name}=", instance_exec(send("#{name}"), &eval))
           end
         }
-      end
-
-      if set = options[:set]
-        representable_hooks[:set] ||= []
-        representable_hooks[:set] << set
       end
 
       if options[:inherit] # TODO: move this to Definition.
