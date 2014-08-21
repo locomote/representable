@@ -47,12 +47,6 @@ private
       Representable.hooks[:after] ||= []
       Representable.hooks[:after] << -> { instance_exec(&representable_hooks[:after]) }
     end
-    if representable_hooks.key? :eval
-      Representable.hooks[:eval] ||= []
-      representable_hooks[:eval].each do |lam|
-         Representable.hooks[:eval] << -> { instance_exec(&lam) }
-      end
-    end
     representable_mapper(format, options).deserialize(doc, options)
   end
 

@@ -42,6 +42,22 @@ module Representable
         read_fragment(doc) do |value|
           value = parse_filter(value)
           set(value)
+          value
+        end
+      end.tap do |value|
+        #binding.pry if @definition[:as].instance_exec(&->{@value}) == 'status'
+        if eval = @definition[:eval]
+          setter_name = setter.to_sym
+          lam = -> {
+            case eval.parameters.size
+              when 0
+                send(setter_name, instance_exec(&eval))
+              when 1
+                send(setter_name, instance_exec(value, &eval))
+            end
+          }
+          Representable.hooks[:eval] ||= []
+          Representable.hooks[:eval] << -> { exec_context.instance_exec(&lam) }
         end
       end
     end
@@ -97,7 +113,9 @@ module Representable
           end
         end
 
-        if (set = @definition[:set])
+        return if @definition[:eval]
+
+        if set = @definition[:set]
           exec_context.instance_exec(value, &set) if set
         else
           exec_context.send(setter, value)
