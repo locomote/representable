@@ -45,7 +45,6 @@ module Representable
           value
         end
       end.tap do |value|
-        #binding.pry if @definition[:as].instance_exec(&->{@value}) == 'status'
         if eval = @definition[:eval]
           setter_name = setter.to_sym
           lam = -> {
