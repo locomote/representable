@@ -41,6 +41,7 @@ module Representable
       evaluate_option(:reader, doc) do
         read_fragment(doc) do |value|
           value = parse_filter(value)
+          value = coerce(value)
           set(value)
           value
         end
@@ -103,15 +104,6 @@ module Representable
 
     def set(value)
       evaluate_option(:setter, value) do
-        if type = @definition[:type]
-          cls = type.is_a?(Symbol) ? Kernel.const_get(type.to_s.classify) : type
-          value = if cls.respond_to? :new
-            cls.new(value)
-          else
-            cls(value)
-          end
-        end
-
         return if @definition[:eval]
 
         if set = @definition[:set]
@@ -120,6 +112,18 @@ module Representable
           exec_context.send(setter, value)
         end
       end
+    end
+
+    def coerce(value)
+      if type = @definition[:type]
+        cls = type.is_a?(Symbol) ? Kernel.const_get(type.to_s.classify) : type
+        value = if cls.respond_to? :new
+          cls.new(value)
+        else
+          send(cls.name, value)
+        end
+      end
+      value
     end
 
     # DISCUSS: do we really need that?
