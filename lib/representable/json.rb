@@ -27,9 +27,11 @@ module Representable
     def from_json(data, *args)
       data = MultiJson.load(data)
       from_hash(data, *args).tap do |*|
-        Representable.hooks[:eval].each(&:call) if Representable.hooks.key? :eval
-        Representable.hooks[:after].each(&:call) if Representable.hooks.key? :after
-        Representable.hooks = {}
+        if Representable.hooks[:pause]
+          Representable.hooks[:eval].each(&:call) if Representable.hooks.key? :eval
+          Representable.hooks[:after].each(&:call) if Representable.hooks.key? :after
+          Representable.hooks = {}
+        end
       end
     end
 
