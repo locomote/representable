@@ -15,24 +15,25 @@ module Representable
       end
     end
 
-
     module ClassMethods
       def collection_representer_class
         JSON::Collection
       end
     end
 
+    def from_json_with_hooks(data, *args)
+      Thread.current[:representable] = {}
+      from_json(data, *args).tap do |result|
+        Thread.current[:representable][:eval].each(&:call) if Thread.current[:representable].key? :eval
+        Thread.current[:representable][:after].each(&:call) if Thread.current[:representable].key? :after
+        Thread.current[:representable] = {}
+      end
+    end
 
     # Parses the body as JSON and delegates to #from_hash.
     def from_json(data, *args)
       data = MultiJson.load(data)
-      from_hash(data, *args).tap do |*|
-        unless Representable.hooks[:pause]
-          Representable.hooks[:eval].each(&:call) if Representable.hooks.key? :eval
-          Representable.hooks[:after].each(&:call) if Representable.hooks.key? :after
-          Representable.hooks = {}
-        end
-      end
+      from_hash(data, *args)
     end
 
     # Returns a JSON string representing this object.

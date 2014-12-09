@@ -44,8 +44,8 @@ private
   # Reads values from +doc+ and sets properties accordingly.
   def update_properties_from(doc, options, format)
     if representable_hooks.key? :after
-      Representable.hooks[:after] ||= []
-      Representable.hooks[:after] << -> { instance_exec(&representable_hooks[:after]) }
+      Thread.current[:representable][:after] ||= []
+      Thread.current[:representable][:after] << -> { instance_exec(&representable_hooks[:after]) }
     end
     representable_mapper(format, options).deserialize(doc, options)
   end

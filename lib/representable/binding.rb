@@ -56,8 +56,8 @@ module Representable
                 send(setter_name, instance_exec(value, &eval))
             end
           }
-          Representable.hooks[:eval] ||= []
-          Representable.hooks[:eval] << -> { exec_context.instance_exec(&lam) }
+          Thread.current[:representable][:eval] ||= []
+          Thread.current[:representable][:eval] << -> { exec_context.instance_exec(&lam) }
         end
       end
     end
